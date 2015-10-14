@@ -35,7 +35,7 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird', 'lib
 
     var tpl = {
 
-        VERSION: "0.1",
+        VERSION: "0.1.1",
 
         Cancel: new Cancel(),
 
@@ -83,7 +83,7 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird', 'lib
                         css.addClass(self.node, 'tpl-active-' + self.activetpl.name);
                     }
                     if (self.activetpl.node) {
-                        css.removeClass(self.activetpl.node, 'tpl-active');
+                        css.addClass(self.activetpl.node, 'tpl-active');
                     }
                     return Promise.resolve(self.activetpl._activate()).then(function() {
                         self.activetpl.trigger('activate');
