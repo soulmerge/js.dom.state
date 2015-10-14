@@ -35,6 +35,8 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird', 'lib
 
     var tpl = {
 
+        VERSION: "0.1",
+
         Cancel: new Cancel(),
 
         Root: oop.Class({
