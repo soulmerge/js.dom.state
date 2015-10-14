@@ -26,7 +26,7 @@
  * Licensee has his registered seat, an establishment or assets.
  */
 
-define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird'], function(oop, hash, Promise) {
+define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird', 'lib/css.js'], function(oop, hash, Promise, css) {
 
     var Cancel = function() {
     };
@@ -66,11 +66,10 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird'], fun
                                 return;
                             }
                             if (self.activetpl.node) {
-                                self.activetpl.node.className = self.activetpl.node.className.replace(/\s*\btpl-active\b\s*/, '');
+                                css.removeClass(self.activetpl.node, 'tpl-active');
                             }
                             if (self.node) {
-                                self.node.className = self.node.className.replace(
-                                        new RegExp('\\s*\\btpl-active-' + self.activetpl.name + '\\b\\s*'), '');
+                                css.removeClass(self.node, 'tpl-active-' + self.activetpl.name);
                             }
                             self.activetpl = null;
                         });
@@ -79,10 +78,10 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird'], fun
                 return promise.then(function() {
                     self.activetpl = tpl;
                     if (self.node) {
-                        self.node.className = self.node.className + ' tpl-active-' + self.activetpl.name;
+                        css.addClass(self.node, 'tpl-active-' + self.activetpl.name);
                     }
                     if (self.activetpl.node) {
-                        self.activetpl.node.className = self.activetpl.node.className + ' tpl-active';
+                        css.removeClass(self.activetpl.node, 'tpl-active');
                     }
                     return Promise.resolve(self.activetpl._activate()).then(function() {
                         self.activetpl.trigger('activate');
@@ -127,7 +126,7 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird'], fun
                     throw new Error('Name not a string!');
                 }
                 if (node) {
-                    node.className = node.className + ' tpl';
+                    css.addClass(node, 'tpl');
                     self.node = node;
                 }
                 self.root = root;
