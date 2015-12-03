@@ -35,7 +35,7 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird', 'lib
 
     var tpl = {
 
-        VERSION: "0.1.1",
+        VERSION: "0.1.2",
 
         Cancel: new Cancel(),
 
@@ -52,7 +52,10 @@ define('lib/score/tpl', ['lib/score/oop', 'lib/score/hash', 'lib/bluebird', 'lib
                 if (tpl === self.activetpl) {
                     return;
                 }
-                var promise = Promise.resolve().cancellable();
+                var promise = Promise.resolve();
+                if (typeof promise.cancellable === 'function') {
+                    promise = promise.cancellable();
+                }
                 if (self.activetpl !== null) {
                     promise = promise.then(function() {
                         if (!self.activetpl.trigger('deactivate')) {

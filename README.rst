@@ -7,8 +7,11 @@ libraries for the development of large scale web projects. Powered by strg.at_.
 .. _The SCORE Framework: http://score-framework.org
 .. _strg.at: http://strg.at
 
+
 score.tpl
 =========
+
+.. _js_tpl:
 
 This module implements a very simple templating engine in Javascript. All
 examples in this documentation will refer to the following example
@@ -156,6 +159,7 @@ definitions:
 - ``load``
 - ``activate``
 - ``deactivate``
+
 
 License
 =======
