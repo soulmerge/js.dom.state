@@ -8,8 +8,9 @@ libraries for the development of large scale web projects. Powered by strg.at_.
 .. _strg.at: http://strg.at
 
 
+*********
 score.tpl
-=========
+*********
 
 .. _js_tpl:
 
@@ -27,7 +28,7 @@ scenario::
     </div>
 
 Initialization
---------------
+==============
 
 All templates managed by this module have a root object, which holds a number
 of templates. The root object makes sure that only one object is active at a
@@ -50,13 +51,13 @@ objects. The following two lines are thus equivalent::
     customertpl.show();
 
 Configuration
--------------
+=============
 
 The templates have various functions, which will be called automatically by
 the root.
 
 _init
-`````
+-----
 
 Will be called just once to initialize the template. This routine might
 fetch any data from the server that is a.) not expected to change during the
@@ -86,7 +87,7 @@ Example for our user editor::
     };
 
 _load
-`````
+-----
 
 This function will be called when the template is expected to display a new
 data set. All arguments to the ``show()``-Function will be passed here as
@@ -119,7 +120,7 @@ the editor for the user with the id 15, we could call either of the following::
     customertpl.show(15);
 
 _activate
-`````````
+---------
 
 This function is called whenever the template needs to be rendered. This is
 the intended place for the template to verify its integrity or check other
@@ -135,7 +136,7 @@ Example for our user editor::
     };
 
 _deactivate
-```````````
+-----------
 
 This function is called when the template is replaced by another template,
 i.e. whenever the user navigates to a different template in the same root.
@@ -150,7 +151,7 @@ Example for our user editor::
     };
 
 Events
-------
+======
 
 The template objects support events for each of the above function
 definitions:
