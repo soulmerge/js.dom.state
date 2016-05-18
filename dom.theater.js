@@ -85,7 +85,7 @@
 
         var theater = {
 
-            VERSION: "0.1.2",
+            __version__: "0.1.2",
 
             Cancel: new Cancel(),
 
