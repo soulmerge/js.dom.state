@@ -23,6 +23,7 @@ page::
         <div id="blogger"> <!-- a scene -->
             <form>
                 <input name="name"/>
+                <select name="origin"></select>
             </form>
         </div>
         <div id="article"> <!-- another scene -->
@@ -77,22 +78,16 @@ operation.
 Example for our user editor::
 
     bloggerScene._init = function() {
-        var country = this.node.querySelector('select[name="origin"]');
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', encodeURI('/list/countries'));
-        xhr.onload = function() {
-            if (xhr.status !== 200) {
-                // handle error
-            };
-            var data = JSON.parse(xhr.responseText);
+        var country = this.node.find('select[name="origin"]');
+        return score.ajax('/list/countries', function(data) {
+            data = JSON.parse(data);
             for (var i = 0; i < data.length; i++) {
                 var option = document.createElement('option');
                 option.setAttribute('value', data[i][0]);
-                option.innerText = data[i][1];
+                option.textContent = data[i][1];
                 country.appendChild(option);
             }
-        };
-        xhr.send();
+        });
     };
 
 _load
@@ -106,17 +101,11 @@ Example for our user editor::
 
     bloggerScene._show = function(id) {
         var self = this;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', encodeURI('/data/user?id=' + id));
-        xhr.onload = function() {
-            if (xhr.status !== 200) {
-                // handle error
-            };
-            self.data = JSON.parse(xhr.responseText);
+        return score.ajax('/data/user?id=' + id, function(data) {
+            self.data = JSON.parse(data);
             self.data.changed = false;
-            self.node.querySelector('input[name="name"]').value = self.data.name;
+            self.node.find('input[name="name"]')[0].value = self.data.name;
         });
-        xhr.send();
     };
 
 Our modified code needs a different call to ``show()``. If we wanted to load
@@ -140,7 +129,7 @@ Example for our user editor::
     bloggerScene._activate = function() {
         if (this.data.changed) {
             this.data.changed = false;
-            this.node.querySelector('input[name="name"]').value = data.name;
+            this.node.find('input[name="name"]')[0].value = data.name;
         }
     };
 
