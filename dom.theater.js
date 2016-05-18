@@ -44,7 +44,7 @@
     }
 })(this, function(Promise, score) {
 
-    score.extend('tpl', ['dom', 'oop'], function() {
+    score.extend('dom.theater', ['dom', 'oop'], function() {
 
         var hash = function(value, visited) {
             if (typeof visited === 'undefined') {
@@ -83,111 +83,112 @@
         Cancel.prototype = Object.create(Error.prototype);
         Cancel.prototype.constructor = Cancel;
 
-        var tpl = {
+        var theater = {
 
             VERSION: "0.1.2",
 
             Cancel: new Cancel(),
 
-            Root: score.oop.Class({
-                __name__: 'TemplateRoot',
+            Stage: score.oop.Class({
+                __name__: 'TheaterStage',
 
                 __init__: function(self, node) {
                     self.node = score.dom(node);
-                    self.activetpl = null;
-                    self.templates = {};
+                    self.node.addClass('score-theater-stage');
+                    self.activeScene = null;
+                    self.scenes = {};
                 },
 
-                _activate: function(self, tpl) {
-                    if (tpl === self.activetpl) {
+                _activate: function(self, scene) {
+                    if (scene === self.activeScene) {
                         return;
                     }
                     var promise = Promise.resolve();
                     if (typeof promise.cancellable === 'function') {
                         promise = promise.cancellable();
                     }
-                    if (self.activetpl !== null) {
+                    if (self.activeScene !== null) {
                         promise = promise.then(function() {
-                            if (!self.activetpl.trigger('deactivate')) {
+                            if (!self.activeScene.trigger('deactivate')) {
                                 throw new Promise.CancellationError();
                             }
                             return Promise.resolve().then(function() {
-                                return self.activetpl._deactivate();
+                                return self.activeScene._deactivate();
                             }).catch(Cancel, function() {
                                 throw new Promise.CancellationError();
                             }).then(function() {
-                                // race conditions were clearing activetpl
-                                if (!self.activetpl) {
+                                // race conditions were clearing activeScene
+                                if (!self.activeScene) {
                                     return;
                                 }
-                                if (self.activetpl.node) {
-                                    self.activetpl.node.removeClass('tpl-active');
+                                if (self.activeScene.node) {
+                                    self.activeScene.node.removeClass('score-theater-scene--active');
                                 }
                                 if (self.node) {
-                                    self.node.removeClass('tpl-active-' + self.activetpl.name);
+                                    self.node.removeClass('score-theater-stage--' + self.activeScene.name);
                                 }
-                                self.activetpl = null;
+                                self.activeScene = null;
                             });
                         });
                     }
                     return promise.then(function() {
-                        self.activetpl = tpl;
+                        self.activeScene = scene;
                         if (self.node) {
-                            self.node.addClass('tpl-active-' + self.activetpl.name);
+                            self.node.addClass('score-theater-stage--' + self.activeScene.name);
                         }
-                        if (self.activetpl.node) {
-                            self.activetpl.node.addClass('tpl-active');
+                        if (self.activeScene.node) {
+                            self.activeScene.node.addClass('score-theater-scene--active');
                         }
-                        return Promise.resolve(self.activetpl._activate()).then(function() {
-                            self.activetpl.trigger('activate');
+                        return Promise.resolve(self.activeScene._activate()).then(function() {
+                            self.activeScene.trigger('activate');
                         });
                     });
                 },
 
-                _register: function(self, tpl) {
-                    if (tpl.name in self.templates) {
-                        throw new Error('Template with the name ' + tpl.name + ' already registered!');
+                _register: function(self, scene) {
+                    if (scene.name in self.scenes) {
+                        throw new Error('Scene with the name ' + scene.name + ' already registered!');
                     }
-                    self.templates[tpl.name] = tpl;
+                    self.scenes[scene.name] = scene;
                 },
 
-                show: function(self, tpl_) {
-                    if (typeof tpl_ === 'string') {
-                        if (typeof self.templates[tpl_] === 'undefined') {
-                            throw new Error('Template ' + tpl_ + ' does not exist!');
+                show: function(self, scene) {
+                    if (typeof scene === 'string') {
+                        if (typeof self.scenes[scene] === 'undefined') {
+                            throw new Error('Scene ' + scene + ' does not exist!');
                         }
-                        tpl_ = self.templates[tpl_];
-                    } else if (!(tpl_ instanceof tpl.Template)) {
-                        throw new Error('Argument must be a template, or the name of a template!');
+                        scene = self.scenes[scene];
+                    } else if (!(scene instanceof theater.Scene)) {
+                        throw new Error('Argument must be a scene, or the name of a scene!');
                     }
                     var args = [];
                     for (var i = 2; i < arguments.length; i++) {
                         args.push(arguments[i]);
                     }
-                    return tpl_.show.apply(tpl_, args);
+                    return scene.show.apply(scene, args);
                 }
 
             }),
 
-            Template: score.oop.Class({
-                __name__: 'Template',
+            Scene: score.oop.Class({
+                __name__: 'Scene',
                 __events__: ['init', 'load', 'activate', 'deactivate'],
 
-                __init__: function(self, root, name, node) {
-                    if (!(root instanceof tpl.Root)) {
-                        throw new Error('First argument must be a tpl.Root object!');
+                __init__: function(self, stage, name, node) {
+                    if (!(stage instanceof theater.Stage)) {
+                        throw new Error('First argument must be a theater.Stage object!');
                     }
                     if (typeof name !== 'string') {
                         throw new Error('Name not a string!');
                     }
                     if (node) {
                         self.node = score.dom(node);
-                        self.node.addClass('tpl');
+                        self.node.addClass('score-theater-scene');
                     }
-                    self.root = root;
+                    self.stage = stage;
                     self.name = name;
                     self.initialized = false;
-                    self.root._register(self);
+                    self.stage._register(self);
                 },
 
                 show: function(self) {
@@ -213,7 +214,7 @@
                     }
                     return promise.then(function() {
                         self.args = args;
-                        return self.root._activate(self);
+                        return self.stage._activate(self);
                     });
                 },
 
@@ -232,7 +233,7 @@
             })
         };
 
-        return tpl;
+        return theater;
 
     });
 
