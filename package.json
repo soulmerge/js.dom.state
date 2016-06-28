@@ -1,6 +1,6 @@
 {
   "name": "score.dom.theater",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Workflow for Single Page Applications using The SCORE Framework",
   "main": "dom.theater.js",
   "directories": {
