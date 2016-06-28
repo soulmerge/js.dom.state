@@ -28,6 +28,7 @@
   "homepage": "https://github.com/score-framework/js.dom.theater#readme",
   "dependencies": {
       "score.init": "0.0.x",
-      "score.dom": "0.0.x"
+      "score.dom": "0.0.x",
+      "bluebird": "3.x.x"
   }
 }
