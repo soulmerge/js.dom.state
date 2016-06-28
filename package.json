@@ -29,6 +29,7 @@
   "dependencies": {
       "score.init": "0.0.x",
       "score.dom": "0.0.x",
+      "score.oop": "0.0.x",
       "bluebird": "3.x.x"
   }
 }
