@@ -1,5 +1,5 @@
 {
-    "project": "score.dom",
+    "project": "score.dom.theater",
     "test_framework" : "mocha",
     "test_path": "test/index.html",
     "browsers": [
