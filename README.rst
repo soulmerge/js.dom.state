@@ -160,6 +160,17 @@ definitions:
 - ``deactivate``
 
 
+Acknowledgments
+===============
+
+Many thanks to BrowserStack_ and `Travis CI`_ for providing automated tests for
+our open source projects! We wouldn't be able to maintain our high quality
+standards without them!
+
+.. _BrowserStack: https://www.browserstack.com
+.. _Travis CI: https://travis-ci.org/
+
+
 License
 =======
 
