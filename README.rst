@@ -14,8 +14,8 @@ score.dom.theater
 
 .. _js_dom_theater:
 
-.. image:: https://travis-ci.org/score-framework/js.dom.svg?branch=master
-    :target: https://travis-ci.org/score-framework/js.dom
+.. image:: https://travis-ci.org/score-framework/js.dom.theater.svg?branch=master
+    :target: https://travis-ci.org/score-framework/js.dom.theater
 
 This module implements a very simple DOM management engine in Javascript. All
 examples in this documentation will refer to the following example scenario,
