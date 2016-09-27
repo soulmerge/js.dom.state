@@ -14,6 +14,9 @@ score.dom.theater
 
 .. _js_dom_theater:
 
+.. image:: https://travis-ci.org/score-framework/js.dom.svg?branch=master
+    :target: https://travis-ci.org/score-framework/js.dom
+
 This module implements a very simple DOM management engine in Javascript. All
 examples in this documentation will refer to the following example scenario,
 where you can edit bloggers and articles on the same page without reloading the
