@@ -100,8 +100,16 @@
                 },
 
                 _activate: function(self, scene) {
+                    if (self.activationPromise) {
+                        if (self.activationPromise.scene === scene) {
+                            return self.activationPromise;
+                        }
+                        return self.activationPromise.then(function() {
+                            self._activate(scene);
+                        });
+                    }
                     if (scene === self.activeScene) {
-                        return;
+                        return Promise.resolve();
                     }
                     var promise = Promise.resolve();
                     if (typeof promise.cancellable === 'function') {
@@ -131,18 +139,21 @@
                             });
                         });
                     }
-                    return promise.then(function() {
+                    self.activationPromise = promise.then(function() {
                         self.activeScene = scene;
                         if (self.node) {
-                            self.node.addClass('score-theater-stage--' + self.activeScene.name);
+                            self.node.addClass('score-theater-stage--' + scene.name);
                         }
-                        if (self.activeScene.node) {
-                            self.activeScene.node.addClass('score-theater-scene--active');
+                        if (scene.node) {
+                            scene.node.addClass('score-theater-scene--active');
                         }
-                        return Promise.resolve(self.activeScene._activate()).then(function() {
-                            self.activeScene.trigger('activate');
-                        });
+                        return scene._activate();
+                    }).then(function() {
+                        scene.trigger('activate');
+                        self.activationPromise = null;
                     });
+                    self.activationPromise.scene = scene;
+                    return self.activationPromise;
                 },
 
                 _register: function(self, scene) {
