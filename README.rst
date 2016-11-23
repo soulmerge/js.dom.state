@@ -28,11 +28,9 @@ examples include:
 Quickstart
 ==========
 
-.. note::
+Note: You can read this quickstart along with its fiddle_.
 
-    You can read this quickstart along with its fiddle_.
-
-    .. _fiddle: https://jsfiddle.net/fjektzrv/
+.. _fiddle: https://jsfiddle.net/fjektzrv/
 
 Let's create an accordion containing a delicious menu:
 
