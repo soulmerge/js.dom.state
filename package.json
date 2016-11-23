@@ -1,6 +1,6 @@
 {
   "name": "score.dom.state",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Workflow for Single Page Applications using The SCORE Framework",
   "main": "dom.state.js",
   "directories": {
