@@ -28,7 +28,13 @@ examples include:
 Quickstart
 ==========
 
-Let's create an accoridon containing a delicious menu:
+.. note::
+
+    You can read this quickstart along with its fiddle_.
+
+    .. _fiddle: https://jsfiddle.net/fjektzrv/
+
+Let's create an accordion containing a delicious menu:
 
 .. code-block:: html
 
