@@ -170,7 +170,44 @@
 
         });
 
+        var ActivatedGroup = score.oop.Class({
+            __name__: 'ActivatedStateGroup',
+            __parent__: Group,
+            __events__: ['show', 'hide'],
+
+            __init__: function(self, node) {
+                self.__super__(node);
+                new InactiveState(self);
+                self.hide();
+            },
+
+            hide: function(self) {
+                return self.show('inactive');
+            }
+
+        });
+
+        var InactiveState = score.oop.Class({
+            __name__: 'InactiveState',
+            __parent__: State,
+
+            __init__: function(self, group) {
+                self.__super__(group, 'inactive');
+            },
+
+            _activate: function(self) {
+                self.group.trigger('hide');
+            },
+
+            _deactivate: function(self) {
+                self.group.trigger('show');
+            }
+
+        });
+
         State.Group = Group;
+
+        State.ActivatedGroup = ActivatedGroup;
 
         return State;
 
