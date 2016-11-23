@@ -1,8 +1,8 @@
 {
-  "name": "score.dom.theater",
+  "name": "score.dom.state",
   "version": "0.0.6",
   "description": "Workflow for Single Page Applications using The SCORE Framework",
-  "main": "dom.theater.js",
+  "main": "dom.state.js",
   "directories": {
     "test": "test"
   },
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/score-framework/js.dom.theater.git"
+    "url": "git+https://github.com/score-framework/js.dom.state.git"
   },
   "keywords": [
     "score",
@@ -23,9 +23,9 @@
   "author": "strg.at <score@strg.at>",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/score-framework/js.dom.theater/issues"
+    "url": "https://github.com/score-framework/js.dom.state/issues"
   },
-  "homepage": "https://github.com/score-framework/js.dom.theater#readme",
+  "homepage": "https://github.com/score-framework/js.dom.state#readme",
   "dependencies": {
       "score.init": "0.0.x",
       "score.dom": "0.0.x",
