@@ -46,43 +46,6 @@
 
     score.extend('dom.state', ['dom', 'oop'], function() {
 
-        var hash = function(value, visited) {
-            if (typeof visited === 'undefined') {
-                visited = [];
-            }
-            var index = visited.indexOf(value);
-            if (index >= 0) {
-                return '__visited__[' + index + ']';
-            }
-            visited.push(value);
-            if (value instanceof Array) {
-                value = value.slice(0);
-                value.unshift('__list_hash__');
-            } else if (typeof value === 'object') {
-                var keys = [];
-                var values = [];
-                for (var k in value) {
-                    if (value.hasOwnProperty(k)) {
-                        keys.push(k);
-                    }
-                }
-                keys.sort();
-                for (var i = 0; i < keys.length; i++) {
-                    values.push(hash(value[keys[i]], visited));
-                }
-                value = ['__dict_hash__', keys, values];
-            }
-            if (arguments[1]) {
-                return value;
-            }
-            return JSON.stringify(value);
-        };
-
-        var Cancel = function() {
-        };
-        Cancel.prototype = Object.create(Error.prototype);
-        Cancel.prototype.constructor = Cancel;
-
         var Group = score.oop.Class({
             __name__: 'StateGroup',
 
@@ -109,28 +72,28 @@
                 if (typeof promise.cancellable === 'function') {
                     promise = promise.cancellable();
                 }
+                if (!state.initialized) {
+                    promise = promise.then(function() {
+                        return state._init();
+                    }).then(function() {
+                        state.trigger('init');
+                        state.initialized = true;
+                    });
+                }
                 if (self.activeState !== null) {
                     promise = promise.then(function() {
                         if (!self.activeState.trigger('deactivate')) {
                             throw new Promise.CancellationError();
                         }
-                        return Promise.resolve().then(function() {
-                            return self.activeState._deactivate();
-                        }).catch(Cancel, function() {
-                            throw new Promise.CancellationError();
-                        }).then(function() {
-                            // race conditions were clearing activeState
-                            if (!self.activeState) {
-                                return;
-                            }
-                            if (self.activeState.node) {
-                                self.activeState.node.removeClass('score-state--active');
-                            }
-                            if (self.node) {
-                                self.node.removeClass('score-state-group--' + self.activeState.name);
-                            }
-                            self.activeState = null;
-                        });
+                        return self.activeState._deactivate();
+                    }).then(function() {
+                        if (self.activeState.node) {
+                            self.activeState.node.removeClass('score-state--active');
+                        }
+                        if (self.node) {
+                            self.node.removeClass('score-state-group--' + self.activeState.name);
+                        }
+                        self.activeState = null;
                     });
                 }
                 self.activationPromise = promise.then(function() {
@@ -163,24 +126,20 @@
                         throw new Error('State ' + state + ' does not exist!');
                     }
                     state = self.states[state];
-                } else if (!(state instanceof state.State)) {
+                } else if (!(state instanceof State)) {
                     throw new Error('Argument must be a state, or the name of a state!');
                 }
-                var args = [];
-                for (var i = 2; i < arguments.length; i++) {
-                    args.push(arguments[i]);
-                }
-                return state.show.apply(state, args);
+                return self._activate(state);
             }
 
         });
 
-        var state = score.oop.Class({
+        var State = score.oop.Class({
             __name__: 'State',
-            __events__: ['init', 'load', 'activate', 'deactivate'],
+            __events__: ['init', 'activate', 'deactivate'],
 
             __init__: function(self, group, name, node) {
-                if (!(group instanceof state.Group)) {
+                if (!(group instanceof State.Group)) {
                     throw new Error('First argument must be a state.Group object!');
                 }
                 if (typeof name !== 'string') {
@@ -197,49 +156,23 @@
             },
 
             show: function(self) {
-                var args = [];
-                for (var i = 1; i < arguments.length; i++) {
-                    args.push(arguments[i]);
-                }
-                var promise = Promise.resolve();
-                if (!self.initialized) {
-                    promise = promise.then(function() {
-                        return Promise.resolve(self._init()).then(function() {
-                            self.initialized = true;
-                            self.trigger('init');
-                        });
-                    });
-                }
-                if (hash(args) !== hash(self.args)) {
-                    promise = promise.then(function() {
-                        return Promise.resolve(self._load.apply(self, args)).then(function() {
-                            self.trigger('load', args);
-                        });
-                    });
-                }
-                return promise.then(function() {
-                    self.args = args;
-                    return self.group._activate(self);
-                });
+                return self.group._activate(self);
             },
 
             _init: function() {
             },
 
-            _load: function(/* args */) {
+            _activate: function() {
             },
 
             _deactivate: function() {
-            },
-
-            _activate: function() {
             }
 
         });
 
-        state.Group = Group;
+        State.Group = Group;
 
-        return state;
+        return State;
 
     });
 
