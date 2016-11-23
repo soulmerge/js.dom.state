@@ -57,11 +57,11 @@
             },
 
             _activate: function(self, state) {
-                if (self.activationPromise) {
-                    if (self.activationPromise.state === state) {
-                        return self.activationPromise;
+                if (self.transitionPromise) {
+                    if (self.transitionPromise.state === state) {
+                        return self.transitionPromise;
                     }
-                    return self.activationPromise.then(function() {
+                    return self.transitionPromise.then(function() {
                         self._activate(state);
                     });
                 }
@@ -96,7 +96,7 @@
                         self.activeState = null;
                     });
                 }
-                self.activationPromise = promise.then(function() {
+                self.transitionPromise = promise.then(function() {
                     self.activeState = state;
                     if (self.node) {
                         self.node.addClass('score-state-group--' + state.name);
@@ -107,10 +107,10 @@
                     return state._activate();
                 }).then(function() {
                     state.trigger('activate');
-                    self.activationPromise = null;
+                    self.transitionPromise = null;
                 });
-                self.activationPromise.state = state;
-                return self.activationPromise;
+                self.transitionPromise.state = state;
+                return self.transitionPromise;
             },
 
             _register: function(self, state) {
