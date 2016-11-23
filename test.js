@@ -61,10 +61,7 @@ describe('score.dom', function() {
         });
 
         after(function() {
-            var fixture = document.getElementById('fixture');
-            while (fixture.children.length) {
-                fixture.removeChild(fixture.children.DOMNode);
-            }
+            document.getElementById('fixture').innerHTML = '';
         });
 
         it('should set css classes', function(done) {
@@ -110,12 +107,12 @@ describe('score.dom', function() {
 
     });
 
-    describe('state constructor', function() {
+    describe('State constructor', function() {
 
         before(function() {
             var fixture = document.getElementById('fixture');
             fixture.innerHTML = 
-                '<div class="ficture-group"> <!-- the group -->' +
+                '<div class="fixture-group"> <!-- the group -->' +
                 '    <div class="fixture-state fixture-state-1"> <!-- a state -->' +
                 '    </div>' +
                 '    <div class="fixture-state"> <!-- another state -->' +
@@ -124,10 +121,7 @@ describe('score.dom', function() {
         });
 
         after(function() {
-            var fixture = document.getElementById('fixture');
-            while (fixture.children.length) {
-                fixture.removeChild(fixture.children.DOMNode);
-            }
+            document.getElementById('fixture').innerHTML = '';
         });
 
         it('should set css classes', function(done) {
