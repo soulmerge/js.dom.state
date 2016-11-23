@@ -11,17 +11,17 @@ describe('score.dom', function() {
 
     describe('module', function() {
 
-        it('should add the score.dom.theater object', function(done) {
+        it('should add the score.dom.state object', function(done) {
             loadScore(['oop', 'dom'], function(score) {
                 try {
                     expect(score).to.be.an('object');
                     expect(score.dom).to.be.a('function');
-                    expect(score.dom.theater).to.be(undefined);
-                    loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+                    expect(score.dom.state).to.be(undefined);
+                    loadScore(['oop', 'dom', 'dom.state'], function(score) {
                         try {
                             expect(score).to.be.an('object');
                             expect(score.dom).to.be.a('function');
-                            expect(score.dom.theater).to.be.an('object');
+                            expect(score.dom.state).to.be.a('function');
                             done();
                         } catch (e) {
                             done(e);
@@ -33,11 +33,11 @@ describe('score.dom', function() {
             });
         });
 
-        it('should provide the "Stage" and "Scene" classes', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+        it('should provide the "Group" and "state" classes', function(done) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    expect(score.dom.theater.Stage).to.be.a('function');
-                    expect(score.dom.theater.Scene).to.be.a('function');
+                    expect(score.dom.state).to.be.a('function');
+                    expect(score.dom.state.Group).to.be.a('function');
                     done();
                 } catch (e) {
                     done(e);
@@ -47,15 +47,15 @@ describe('score.dom', function() {
 
     });
 
-    describe('Stage constructor', function() {
+    describe('Group constructor', function() {
 
         before(function() {
             var fixture = document.getElementById('fixture');
             fixture.innerHTML = 
-                '<div class="fixture-stage"> <!-- the stage -->' +
-                '    <div class="fixture-scene"> <!-- a scene -->' +
+                '<div class="fixture-group"> <!-- the group -->' +
+                '    <div class="fixture-state"> <!-- a state -->' +
                 '    </div>' +
-                '    <div class="fixture-scene"> <!-- another scene -->' +
+                '    <div class="fixture-state"> <!-- another state -->' +
                 '    </div>' +
                 '</div>';
         });
@@ -63,18 +63,17 @@ describe('score.dom', function() {
         after(function() {
             var fixture = document.getElementById('fixture');
             while (fixture.children.length) {
-                fixture.removeChild(fixture.children[0]);
+                fixture.removeChild(fixture.children.DOMNode);
             }
         });
 
         it('should set css classes', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var node = score.dom('#fixture .fixture-stage');
-                    expect(node.hasClass('score-theater-stage')).to.be(false);
-                    score.dom.theater.Stage(node);
-                    console.log(1, node.attr('class'));
-                    expect(node.hasClass('score-theater-stage')).to.be(true);
+                    var node = score.dom('#fixture .fixture-group');
+                    expect(node.hasClass('score-state-group')).to.be(false);
+                    score.dom.state.Group(node);
+                    expect(node.hasClass('score-state-group')).to.be(true);
                     done();
                 } catch (e) {
                     done(e);
@@ -83,11 +82,11 @@ describe('score.dom', function() {
         });
 
         it('should provide a node member', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var node = score.dom('#fixture .fixture-stage');
-                    var stage = score.dom.theater.Stage(node);
-                    expect(stage.node).to.be(node);
+                    var node = score.dom('#fixture .fixture-group');
+                    var group = score.dom.state.Group(node);
+                    expect(group.node).to.be(node);
                     done();
                 } catch (e) {
                     done(e);
@@ -96,12 +95,12 @@ describe('score.dom', function() {
         });
 
         it('should not change the node content', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var node = score.dom('#fixture .fixture-stage');
-                    var prevHTML = node[0].innerHTML;
-                    score.dom.theater.Stage(node);
-                    expect(node[0].innerHTML).to.be(prevHTML);
+                    var node = score.dom('#fixture .fixture-group');
+                    var prevHTML = node.DOMNode.innerHTML;
+                    score.dom.state.Group(node);
+                    expect(node.DOMNode.innerHTML).to.be(prevHTML);
                     done();
                 } catch (e) {
                     done(e);
@@ -111,15 +110,15 @@ describe('score.dom', function() {
 
     });
 
-    describe('Scene constructor', function() {
+    describe('state constructor', function() {
 
         before(function() {
             var fixture = document.getElementById('fixture');
             fixture.innerHTML = 
-                '<div class="ficture-stage"> <!-- the stage -->' +
-                '    <div class="fixture-scene fixture-scene-1"> <!-- a scene -->' +
+                '<div class="ficture-group"> <!-- the group -->' +
+                '    <div class="fixture-state fixture-state-1"> <!-- a state -->' +
                 '    </div>' +
-                '    <div class="fixture-scene"> <!-- another scene -->' +
+                '    <div class="fixture-state"> <!-- another state -->' +
                 '    </div>' +
                 '</div>';
         });
@@ -127,27 +126,27 @@ describe('score.dom', function() {
         after(function() {
             var fixture = document.getElementById('fixture');
             while (fixture.children.length) {
-                fixture.removeChild(fixture.children[0]);
+                fixture.removeChild(fixture.children.DOMNode);
             }
         });
 
         it('should set css classes', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var stageNode = score.dom('#fixture .fixture-stage');
-                    var scene1Node = score.dom('#fixture .fixture-scene').first;
-                    var scene2Node = score.dom('#fixture .fixture-scene').eq(1);
-                    expect(scene1Node.hasClass('score-theater-scene')).to.be(false);
-                    expect(scene2Node.hasClass('score-theater-scene')).to.be(false);
-                    var stage = score.dom.theater.Stage(stageNode);
-                    expect(scene1Node.hasClass('score-theater-scene')).to.be(false);
-                    expect(scene2Node.hasClass('score-theater-scene')).to.be(false);
-                    score.dom.theater.Scene(stage, 'scene1', scene1Node);
-                    expect(scene1Node.hasClass('score-theater-scene')).to.be(true);
-                    expect(scene2Node.hasClass('score-theater-scene')).to.be(false);
-                    score.dom.theater.Scene(stage, 'scene2', scene2Node);
-                    expect(scene1Node.hasClass('score-theater-scene')).to.be(true);
-                    expect(scene2Node.hasClass('score-theater-scene')).to.be(true);
+                    var stateNode = score.dom('#fixture .fixture-group');
+                    var state1Node = score.dom('#fixture .fixture-state').first;
+                    var state2Node = score.dom('#fixture .fixture-state').eq(1);
+                    expect(state1Node.hasClass('score-state')).to.be(false);
+                    expect(state2Node.hasClass('score-state')).to.be(false);
+                    var group = score.dom.state.Group(stateNode);
+                    expect(state1Node.hasClass('score-state')).to.be(false);
+                    expect(state2Node.hasClass('score-state')).to.be(false);
+                    score.dom.state(group, 'state1', state1Node);
+                    expect(state1Node.hasClass('score-state')).to.be(true);
+                    expect(state2Node.hasClass('score-state')).to.be(false);
+                    score.dom.state(group, 'state2', state2Node);
+                    expect(state1Node.hasClass('score-state')).to.be(true);
+                    expect(state2Node.hasClass('score-state')).to.be(true);
                     done();
                 } catch (e) {
                     done(e);
@@ -156,16 +155,16 @@ describe('score.dom', function() {
         });
 
         it('should provide a node member', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var stageNode = score.dom('#fixture .fixture-stage');
-                    var stage = score.dom.theater.Stage(stageNode);
-                    var scene1Node = score.dom('#fixture .fixture-scene').first;
-                    var scene2Node = score.dom('#fixture .fixture-scene').eq(1);
-                    var scene1 = score.dom.theater.Scene(stage, 'scene1', scene1Node);
-                    var scene2 = score.dom.theater.Scene(stage, 'scene2', scene2Node);
-                    expect(scene1.node).to.be(scene1Node);
-                    expect(scene2.node).to.be(scene2Node);
+                    var stateNode = score.dom('#fixture .fixture-group');
+                    var group = score.dom.state.Group(stateNode);
+                    var state1Node = score.dom('#fixture .fixture-state').first;
+                    var state2Node = score.dom('#fixture .fixture-state').eq(1);
+                    var state1 = score.dom.state(group, 'state1', state1Node);
+                    var state2 = score.dom.state(group, 'state2', state2Node);
+                    expect(state1.node).to.be(state1Node);
+                    expect(state2.node).to.be(state2Node);
                     done();
                 } catch (e) {
                     done(e);
@@ -173,15 +172,15 @@ describe('score.dom', function() {
             });
         });
 
-        it('should refuse duplicate scene names', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+        it('should refuse duplicate state names', function(done) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var stageNode = score.dom('#fixture .fixture-stage');
-                    var stage = score.dom.theater.Stage(stageNode);
-                    var scene1Node = score.dom('#fixture .fixture-scene').first;
-                    var scene2Node = score.dom('#fixture .fixture-scene').eq(1);
-                    score.dom.theater.Scene(stage, 'SAMENAME', scene1Node);
-                    expect(function() { score.dom.theater.Scene(stage, 'SAMENAME', scene2Node); }).to.throwError();
+                    var stateNode = score.dom('#fixture .fixture-group');
+                    var group = score.dom.state.Group(stateNode);
+                    var state1Node = score.dom('#fixture .fixture-state').first;
+                    var state2Node = score.dom('#fixture .fixture-state').eq(1);
+                    score.dom.state(group, 'SAMENAME', state1Node);
+                    expect(function() { score.dom.state(group, 'SAMENAME', state2Node); }).to.throwError();
                     done();
                 } catch (e) {
                     done(e);
@@ -190,14 +189,14 @@ describe('score.dom', function() {
         });
 
         it('should not change the node content', function(done) {
-            loadScore(['oop', 'dom', 'dom.theater'], function(score) {
+            loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    var stageNode = score.dom('#fixture .fixture-stage');
-                    var stage = score.dom.theater.Stage(stageNode);
-                    var scene1Node = score.dom('#fixture .fixture-scene').first;
-                    var prevHTML = scene1Node[0].innerHTML;
-                    score.dom.theater.Scene(stage, 'scene1', scene1Node);
-                    expect(scene1Node[0].innerHTML).to.be(prevHTML);
+                    var stateNode = score.dom('#fixture .fixture-group');
+                    var group = score.dom.state.Group(stateNode);
+                    var state1Node = score.dom('#fixture .fixture-state').first;
+                    var prevHTML = state1Node.DOMNode.innerHTML;
+                    score.dom.state(group, 'state1', state1Node);
+                    expect(state1Node.DOMNode.innerHTML).to.be(prevHTML);
                     done();
                 } catch (e) {
                     done(e);

@@ -1,5 +1,5 @@
 var testConf = {
-    'dom.theater': 'local'
+    'dom.state': 'local'
 };
 
 if (typeof module != 'undefined') {
