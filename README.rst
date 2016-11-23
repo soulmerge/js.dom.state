@@ -8,159 +8,225 @@ libraries for the development of large scale web projects. Powered by strg.at_.
 .. _strg.at: http://strg.at
 
 
-*****************
-score.dom.theater
-*****************
+***************
+score.dom.state
+***************
 
-.. _js_dom_theater:
+.. _js_dom_state:
 
-.. image:: https://travis-ci.org/score-framework/js.dom.theater.svg?branch=master
-    :target: https://travis-ci.org/score-framework/js.dom.theater
+.. image:: https://travis-ci.org/score-framework/js.dom.state.svg?branch=master
+    :target: https://travis-ci.org/score-framework/js.dom.state
 
-This module implements a very simple DOM management engine in Javascript. All
-examples in this documentation will refer to the following example scenario,
-where you can edit bloggers and articles on the same page without reloading the
-page::
+This module implements a state machine for the DOM. When properly applied, this
+approach can provide rudimentary solutions for a vast range of use cases. Some
+examples include: 
 
-    <div id="main"> <!-- the stage -->
-        <div id="blogger"> <!-- a scene -->
-            <form>
-                <input name="name"/>
-                <select name="origin"></select>
-            </form>
+- accordions
+- menus
+- tabs
+
+Quickstart
+==========
+
+Let's create an accoridon containing a delicious menu:
+
+.. code-block:: html
+
+    <div id="menu">
+        <div id="starters">
+            <h1>Starters</h1>
+            <ul class="state-content">
+                <li>moules marinieres</li>
+                <li>pate de foie gras</li>
+                <li>beluga caviar</li>
+                <li>eggs Benedictine</li>
+                <li>tart de poireaux</li>
+                <li>frogs' legs amandine</li>
+                <li>oeufs de caille Richard Shepherd</li>
+            </ul>
         </div>
-        <div id="article"> <!-- another scene -->
-            <form>
-                <input name="title"/>
-                <textarea name="text"></textarea>
-            </form>
+        <div id="cheese">
+            <h1>Cheese</h1>
+            <ul class="state-content">
+                <li>Red Windsor</li>
+                <li>Stilton</li>
+                <li>Gruyere</li>
+                <li>Emmental</li>
+                <li>Norwegian Jarlsberger</li>
+                <li>Liptauer</li>
+                <li>Lancashire</li>
+                <li>White Stilton</li>
+                <li>Danish Blue</li>
+            </ul>
+        </div>
+        <div id="dessert">
+            <h1>Dessert</h1>
+            <ul class="state-content">
+                <li>wafer-thin mint</li>
+            </ul>
         </div>
     </div>
 
-A *stage* is a prominent DOM node that can present various *scenes*.
+We will first need to create a group for the states of the menu:
 
-A *scene* is one of multiple user interfaces on a given stage.
+.. code-block:: javascript
 
-Initialization
-==============
+    var menu = score.dom.state.Group(score.dom('#menu'));
 
-All scenes managed by this module have a stage object, which holds a number
-of scenes. The stage object makes sure that only one object is active at a
-time and calls all appropriate functions on the scene objects::
+This will add the CSS class ``score-state-group`` to the top-most ``#menu``
+node. We can now create a state for each tab:
 
-    var stage = new score.dom.theater.Stage(score.dom('#main'));
+.. code-block:: javascript
 
-After defining a stage, you can create specific scenes for it::
+    score.dom.state(menu, 'starters', score.dom('#starters'));
+    score.dom.state(menu, 'cheese', score.dom('#cheese'));
+    score.dom.state(menu, 'dessert', score.dom('#dessert'));
 
-    var bloggerScene = new score.dom.theater.Scene(stage, 'blogger', document.getElementById('blogger'));
+Each state node now has the additional CSS class ``score-state``. The group
+will now make sure, that at any given time, at most one of these states is
+active. The active state will additionaly receive the class
+``score-state--active``. Let's show the starters:
 
-The scenes can then be activated through the stage object, or the individual
-objects. The following lines are thus equivalent::
+.. code-block:: javascript
 
-    stage.show('blogger');
-    /* is the same as */
-    stage.show(bloggerScene);
-    /* is the same as */
-    bloggerScene.show();
+    menu.show('starters');
 
-Configuration
-=============
+The DOM now looks like this:
 
-The scenes have various functions, which will be called automatically by
-the stage.
+.. code-block:: html
 
-_init
------
+    <div id="menu" class="score-state-group score-state-group--starters">
+        <div id="starters" class="score-state score-state--active">
+            ...
+        </div>
+        <div id="cheese" class="score-state">
+            ...
+        </div>
+        <div id="dessert" class="score-state">
+            ...
+        </div>
+    </div>
 
-Will be called just once to initialize the scene. This routine might
-fetch any data from the server that is a.) not expected to change during the
-runtime and b.) not related to any specific data that might be rendered. This
-function must return a promise object, if it performs an asynchronous
-operation.
+If we now switch to the cheese section (``menu.show('cheese')``), the DOM will
+instead look like the following:
 
-Example for our user editor::
+.. code-block:: html
 
-    bloggerScene._init = function() {
-        var country = this.node.find('select[name="origin"]');
-        return score.ajax('/list/countries', function(data) {
-            data = JSON.parse(data);
-            for (var i = 0; i < data.length; i++) {
-                var option = document.createElement('option');
-                option.setAttribute('value', data[i][0]);
-                option.textContent = data[i][1];
-                country.appendChild(option);
-            }
-        });
-    };
+    <div id="menu" class="score-state-group score-state-group--cheese">
+        <div id="starters" class="score-state">
+            ...
+        </div>
+        <div id="cheese" class="score-state score-state--active">
+            ...
+        </div>
+        <div id="dessert" class="score-state">
+            ...
+        </div>
+    </div>
 
-_load
------
+The example just needs a bit of styling to work:
 
-This function will be called when the scene is expected to display a new
-data set. All arguments to the ``show()``-Function will be passed here as
-well.
+.. code-block:: css
 
-Example for our user editor::
+    #menu .state-content {
+        display: none;
+    }
 
-    bloggerScene._show = function(id) {
-        var self = this;
-        return score.ajax('/data/user?id=' + id, function(data) {
-            self.data = JSON.parse(data);
-            self.data.changed = false;
-            self.node.find('input[name="name"]')[0].value = self.data.name;
-        });
-    };
+    #menu .score-state--active .state-content {
+        display: block;
+    }
 
-Our modified code needs a different call to ``show()``. If we wanted to load
-the editor for the user with the id 15, we could call either of the following::
+Details
+=======
 
-    stage.show('blogger', 15);
-    /* is the same as */
-    stage.show(bloggerScene, 15);
-    /* is the same as */
-    bloggerScene.show(15);
+State Transitions
+-----------------
 
-_activate
----------
+Whenever a state group is ordered to load a certain state, it will perform a
+multi-step transitions from the active state to the requested state:
 
-This function is called whenever the scene needs to be rendered. This is
-the intended place for the scene to verify its integrity or check other
-constraints before being shown. This function does not receive any parameters.
+- *Initialize* the new state if it's loaded for the first time.
+- *Deactivate* the current state (if there is one).
+- *Activate* the requested state.
 
-Example for our user editor::
+State objects have a function for each of these operations: ``_init``,
+``_activate`` and ``_deactivate``. It is possible to create sub-classes of the
+State class to perform some tasks at these points:
 
-    bloggerScene._activate = function() {
-        if (this.data.changed) {
-            this.data.changed = false;
-            this.node.find('input[name="name"]')[0].value = data.name;
+.. code-block:: javascript
+
+    var CheeseState = score.oop.Class({
+        __name__: 'CheeseState',
+        __parent__: score.dom.state,
+
+        _activate: function(self) {
+            alert("Sorry, we're out of cheese");
         }
-    };
 
-_deactivate
------------
+    });
 
-This function is called when the scene is replaced by another scene,
-i.e. whenever the user navigates to a different scene in the same stage.
+These functions may also return Promises, in which case the state transition is
+delayed until the promise is complete:
 
-Example for our user editor::
+.. code-block:: javascript
 
-    bloggerScene._deactivate = function() {
-        if (this.data.changed && askIfStore()) {
-            this.store();
-            this.data.changed = false;
+    var StartersState = score.oop.Class({
+        __name__: 'StartersState',
+        __parent__: score.dom.state,
+
+        _deactivate: function(self) {
+            // whoa, better eat up!
+            return new Promise(function(resolve, reject) {
+                window.setTimeout(resolve, 3600 * 1000);
+            });
         }
-    };
+    });
+
+The state above takes a full hour to deactivate, in which time the menu will
+refuse to perform any other state transitions (since a very long-lasting one is
+already in progress).
+
+The Initialization can be used to perform some heavy-duty operations only when
+they are necessary (i.e. when the state is actually relevant). Loading the main
+courses asynchronously might look likethe following:
+
+.. code-block:: javascript
+
+    var MainCoursesState = score.oop.Class({
+        __name__: 'MainCoursesState',
+        __parent__: score.dom.state,
+
+        _init: function(self) {
+            return score.ajax('/main-courses').then(function(courses) {
+                var list = self.node.find('.state-content');
+                courses.forEach(function(course) {
+                    list.append(score.dom.create('li').text(course));
+                });
+            });
+        }
+    });
 
 Events
-======
+------
 
-The scene objects support events for each of the above function
-definitions:
+The state objects support events for each of the above function definitions:
 
-- ``init``
-- ``load``
-- ``activate``
-- ``deactivate``
+.. code-block:: javascript
+
+    menu.states.cheese.on('init', function() {
+        // TODO: compile list of excuses
+    });
+
+    menu.states.dessert.on('deactivate', function() {
+        // this handler may return false to indicate
+        // that the transition should be canceled.
+        console.log("Customer has died");
+        return false;
+    });
+
+The most important difference between the events and the specific methods is
+that events follow the usual rules of the score.oop module, which means that
+all event listeners need to be synchronous.
 
 
 Acknowledgments
