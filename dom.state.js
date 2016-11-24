@@ -173,15 +173,15 @@
         var ActivatedGroup = score.oop.Class({
             __name__: 'ActivatedStateGroup',
             __parent__: Group,
-            __events__: ['show', 'hide'],
+            __events__: ['activate', 'deactivate'],
 
             __init__: function(self, node) {
                 self.__super__(node);
                 new InactiveState(self);
-                self.hide();
+                self.deactivate();
             },
 
-            hide: function(self) {
+            deactivate: function(self) {
                 return self.show('inactive');
             }
 
@@ -196,11 +196,11 @@
             },
 
             _activate: function(self) {
-                self.group.trigger('hide');
+                self.group.trigger('deactivate');
             },
 
             _deactivate: function(self) {
-                self.group.trigger('show');
+                self.group.trigger('activate');
             }
 
         });
