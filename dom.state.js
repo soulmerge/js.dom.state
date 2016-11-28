@@ -56,6 +56,22 @@
                 self.states = {};
             },
 
+            defineState: function(self, name, node) {
+                return new State(self, name, node);
+            },
+
+            show: function(self, state) {
+                if (typeof state === 'string') {
+                    if (typeof self.states[state] === 'undefined') {
+                        throw new Error('State ' + state + ' does not exist!');
+                    }
+                    state = self.states[state];
+                } else if (!(state instanceof State)) {
+                    throw new Error('Argument must be a state, or the name of a state!');
+                }
+                return self._activate(state);
+            },
+
             _activate: function(self, state) {
                 if (self.transitionPromise) {
                     if (self.transitionPromise.state === state) {
@@ -118,18 +134,6 @@
                     throw new Error('State with the name ' + state.name + ' already registered!');
                 }
                 self.states[state.name] = state;
-            },
-
-            show: function(self, state) {
-                if (typeof state === 'string') {
-                    if (typeof self.states[state] === 'undefined') {
-                        throw new Error('State ' + state + ' does not exist!');
-                    }
-                    state = self.states[state];
-                } else if (!(state instanceof State)) {
-                    throw new Error('Argument must be a state, or the name of a state!');
-                }
-                return self._activate(state);
             }
 
         });

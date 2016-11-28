@@ -75,16 +75,16 @@ We will first need to create a group for the states of the menu:
 
 .. code-block:: javascript
 
-    var menu = score.dom.state.Group(score.dom('#menu'));
+    var menu = new score.dom.state.Group(score.dom('#menu'));
 
 This will add the CSS class ``score-state-group`` to the top-most ``#menu``
 node. We can now create a state for each tab:
 
 .. code-block:: javascript
 
-    new score.dom.state.State(menu, 'starters', score.dom('#starters'));
-    new score.dom.state.State(menu, 'cheese', score.dom('#cheese'));
-    new score.dom.state.State(menu, 'dessert', score.dom('#dessert'));
+    menu.defineState('starters', score.dom('#starters'));
+    menu.defineState('cheese', score.dom('#cheese'));
+    menu.defineState('dessert', score.dom('#dessert'));
 
 Each state node now has the additional CSS class ``score-state``. The group
 will now make sure, that at any given time, at most one of these states is
@@ -142,6 +142,27 @@ The example just needs a bit of styling to work:
 
 Details
 =======
+
+State Objects
+-------------
+
+The examples in the Quickstart section use a simplified API, where states are
+defined with a function call on the group itself:
+
+.. code-block:: javascript
+
+    var state = menu.defineState('starters', score.dom('#starters'));
+
+This call actually creates a new State object and returns it. It is equivalent
+to the following:
+
+.. code-block:: javascript
+
+    var state = new score.dom.state.State(menu, 'starters', score.dom('#starters'));
+
+This is important to know, as it is possible to tweak a state's behaviour, as
+we will see in the next few sections.
+
 
 State Transitions
 -----------------
