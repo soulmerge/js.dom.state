@@ -82,9 +82,9 @@ node. We can now create a state for each tab:
 
 .. code-block:: javascript
 
-    score.dom.state(menu, 'starters', score.dom('#starters'));
-    score.dom.state(menu, 'cheese', score.dom('#cheese'));
-    score.dom.state(menu, 'dessert', score.dom('#dessert'));
+    new score.dom.state.State(menu, 'starters', score.dom('#starters'));
+    new score.dom.state.State(menu, 'cheese', score.dom('#cheese'));
+    new score.dom.state.State(menu, 'dessert', score.dom('#dessert'));
 
 Each state node now has the additional CSS class ``score-state``. The group
 will now make sure, that at any given time, at most one of these states is
@@ -161,7 +161,7 @@ State class to perform some tasks at these points:
 
     var CheeseState = score.oop.Class({
         __name__: 'CheeseState',
-        __parent__: score.dom.state,
+        __parent__: score.dom.state.State,
 
         _activate: function(self) {
             alert("Sorry, we're out of cheese");
@@ -176,7 +176,7 @@ delayed until the promise is complete:
 
     var StartersState = score.oop.Class({
         __name__: 'StartersState',
-        __parent__: score.dom.state,
+        __parent__: score.dom.state.State,
 
         _deactivate: function(self) {
             // whoa, better eat up!
@@ -198,7 +198,7 @@ courses asynchronously might look likethe following:
 
     var MainCoursesState = score.oop.Class({
         __name__: 'MainCoursesState',
-        __parent__: score.dom.state,
+        __parent__: score.dom.state.State,
 
         _init: function(self) {
             return score.ajax('/main-courses').then(function(courses) {

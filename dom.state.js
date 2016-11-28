@@ -139,7 +139,7 @@
             __events__: ['init', 'activate', 'deactivate'],
 
             __init__: function(self, group, name, node) {
-                if (!(group instanceof State.Group)) {
+                if (!(group instanceof Group)) {
                     throw new Error('First argument must be a state.Group object!');
                 }
                 if (typeof name !== 'string') {
@@ -205,11 +205,15 @@
 
         });
 
-        State.Group = Group;
+        return {
 
-        State.ActivatedGroup = ActivatedGroup;
+            Group: Group,
 
-        return State;
+            State: State,
+
+            ActivatedGroup: ActivatedGroup
+
+        };
 
     });
 

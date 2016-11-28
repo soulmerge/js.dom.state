@@ -21,7 +21,7 @@ describe('score.dom', function() {
                         try {
                             expect(score).to.be.an('object');
                             expect(score.dom).to.be.a('function');
-                            expect(score.dom.state).to.be.a('function');
+                            expect(score.dom.state).to.be.an('object');
                             done();
                         } catch (e) {
                             done(e);
@@ -36,7 +36,8 @@ describe('score.dom', function() {
         it('should provide the "Group" and "state" classes', function(done) {
             loadScore(['oop', 'dom', 'dom.state'], function(score) {
                 try {
-                    expect(score.dom.state).to.be.a('function');
+                    expect(score.dom.state).to.be.an('object');
+                    expect(score.dom.state.State).to.be.a('function');
                     expect(score.dom.state.Group).to.be.a('function');
                     done();
                 } catch (e) {
@@ -135,10 +136,10 @@ describe('score.dom', function() {
                     var group = score.dom.state.Group(stateNode);
                     expect(state1Node.hasClass('score-state')).to.be(false);
                     expect(state2Node.hasClass('score-state')).to.be(false);
-                    score.dom.state(group, 'state1', state1Node);
+                    score.dom.state.State(group, 'state1', state1Node);
                     expect(state1Node.hasClass('score-state')).to.be(true);
                     expect(state2Node.hasClass('score-state')).to.be(false);
-                    score.dom.state(group, 'state2', state2Node);
+                    score.dom.state.State(group, 'state2', state2Node);
                     expect(state1Node.hasClass('score-state')).to.be(true);
                     expect(state2Node.hasClass('score-state')).to.be(true);
                     done();
@@ -155,8 +156,8 @@ describe('score.dom', function() {
                     var group = score.dom.state.Group(stateNode);
                     var state1Node = score.dom('#fixture .fixture-state').first;
                     var state2Node = score.dom('#fixture .fixture-state').eq(1);
-                    var state1 = score.dom.state(group, 'state1', state1Node);
-                    var state2 = score.dom.state(group, 'state2', state2Node);
+                    var state1 = score.dom.state.State(group, 'state1', state1Node);
+                    var state2 = score.dom.state.State(group, 'state2', state2Node);
                     expect(state1.node).to.be(state1Node);
                     expect(state2.node).to.be(state2Node);
                     done();
@@ -173,8 +174,8 @@ describe('score.dom', function() {
                     var group = score.dom.state.Group(stateNode);
                     var state1Node = score.dom('#fixture .fixture-state').first;
                     var state2Node = score.dom('#fixture .fixture-state').eq(1);
-                    score.dom.state(group, 'SAMENAME', state1Node);
-                    expect(function() { score.dom.state(group, 'SAMENAME', state2Node); }).to.throwError();
+                    score.dom.state.State(group, 'SAMENAME', state1Node);
+                    expect(function() { score.dom.state.State(group, 'SAMENAME', state2Node); }).to.throwError();
                     done();
                 } catch (e) {
                     done(e);
@@ -189,7 +190,7 @@ describe('score.dom', function() {
                     var group = score.dom.state.Group(stateNode);
                     var state1Node = score.dom('#fixture .fixture-state').first;
                     var prevHTML = state1Node.DOMNode.innerHTML;
-                    score.dom.state(group, 'state1', state1Node);
+                    score.dom.state.State(group, 'state1', state1Node);
                     expect(state1Node.DOMNode.innerHTML).to.be(prevHTML);
                     done();
                 } catch (e) {
