@@ -27,8 +27,7 @@
   },
   "homepage": "https://github.com/score-framework/js.dom.state#readme",
   "dependencies": {
-      "score.init": "0.0.x",
-      "score.dom": "0.0.x",
+      "score.dom": "0.1.x",
       "score.oop": "0.x.x",
       "bluebird": "3.x.x"
   }
