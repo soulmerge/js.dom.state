@@ -32,19 +32,23 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['bluebird', 'score.dom', 'score.oop'], factory);
+        define(['score.dom', 'score.oop'], factory);
     } else if (typeof module === 'object' && module.exports) {
         // Node. Does not work with strict CommonJS, but
         // only CommonJS-like environments that support module.exports,
         // like Node.
-        module.exports = factory(require('bluebird'), require('score.dom'), require('score.oop'));
+        module.exports = factory(require('score.dom'), require('score.oop'));
     } else {
         // Browser globals (root is window)
         root.score.extend('dom.state', ['dom', 'oop'], function(dom, oop) {
-            return factory(Promise, dom, oop);
+            return factory(dom, oop);
         });
     }
-})(this, function(Promise, dom, oop) {
+})(this, function(dom, oop) {
+
+    var StateChangeAborted = oop.Exception({
+        __name__: 'StateChangeAborted'
+    });
 
     var Group = oop.Class({
         __name__: 'StateGroup',
@@ -85,9 +89,6 @@
                 return Promise.resolve();
             }
             var promise = Promise.resolve();
-            if (typeof promise.cancellable === 'function') {
-                promise = promise.cancellable();
-            }
             if (!state.initialized) {
                 promise = promise.then(function() {
                     return state._init();
@@ -99,7 +100,7 @@
             if (self.activeState !== null) {
                 promise = promise.then(function() {
                     if (!self.activeState.trigger('deactivate')) {
-                        throw new Promise.CancellationError();
+                        throw new StateChangeAborted();
                     }
                     return self.activeState._deactivate();
                 }).then(function() {
@@ -215,7 +216,9 @@
 
         State: State,
 
-        ActivatedGroup: ActivatedGroup
+        ActivatedGroup: ActivatedGroup,
+
+        StateChangeAborted: StateChangeAborted
 
     };
 
